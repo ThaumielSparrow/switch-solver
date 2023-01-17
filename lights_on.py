@@ -145,8 +145,18 @@ def text_to_mat(gridtxt, invert=True):
     return mat
 
 
+def mat_to_text(mat, invert=False):
+    s = ""
+    for i in mat:
+        for j in i:
+            if invert:
+                s += str(1-j)
+            else:
+                s += str(j)
+    return s
+
+
 def text_solver(gridtxt):
-    global bsol
     mat_inv = text_to_mat(gridtxt, True)
     if type(mat_inv) == int:
         return 1
@@ -160,7 +170,14 @@ def text_solver(gridtxt):
     return bsol
 
 
+def final_wrapper(gridtxt):
+    mat = text_solver(gridtxt)
+    gridtxt_final = mat_to_text(mat)
+    print(gridtxt_final)
+
+
 master = Tk()
+master_gridtxt = StringVar()
 master.title("it's really just simple linear algebra")
 master.geometry("250x125")
 
@@ -170,12 +187,12 @@ check_off = PhotoImage(width=check_size, height=check_size)
 check_on.put(("green"), to=(0,0,check_size,check_size))
 check_off.put(("red"), to=(0,0,check_size,check_size))
 
-master_gridtxt = "000000000"
+
 def update_gridtxt():
-    master_gridtxt = ""
+    master_gridtxt.set("")
     for i in range(9):
         s = str(globals()[f"b_state{i}"].get())
-        master_gridtxt += s
+        master_gridtxt.set(master_gridtxt.get() + s)
 
 
 def reset_boxes():
@@ -194,7 +211,7 @@ for i in range(9):
     globals()[f"b{i}"].grid(row=row, column=col, padx=1, pady=1)
 
 
-b_solve = Button(master, text="Solve", command=text_solver(master_gridtxt))
+b_solve = Button(master, text="Solve", command=lambda:final_wrapper(master_gridtxt.get()))
 b_solve.grid(row=1, column=4, padx=1, pady=1)
 
 b_reset = Button(master, text="Reset", command=reset_boxes)
