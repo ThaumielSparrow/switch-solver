@@ -170,22 +170,19 @@ def text_solver(gridtxt):
     return bsol
 
 
-def final_wrapper(gridtxt):
-    mat = text_solver(gridtxt)
-    gridtxt_final = mat_to_text(mat)
-    print(gridtxt_final)
-
-
 master = Tk()
-master_gridtxt = StringVar()
-master.title("it's really just simple linear algebra")
-master.geometry("250x125")
+master_gridtxt = StringVar(value="000000000")
+master.title("DVa's Puzzle Solver")
+master.geometry("400x115")
+master.resizable(width=False, height=False)
 
 check_size = 25
 check_on = PhotoImage(width=check_size, height=check_size)
 check_off = PhotoImage(width=check_size, height=check_size)
 check_on.put(("green"), to=(0,0,check_size,check_size))
 check_off.put(("red"), to=(0,0,check_size,check_size))
+
+label_text = StringVar()
 
 
 def update_gridtxt():
@@ -198,7 +195,19 @@ def update_gridtxt():
 def reset_boxes():
     for i in range(9):
         globals()[f"b_state{i}"].set(0)
+    label_text.set("")
+    b_solve['state'] = NORMAL
 
+
+def final_wrapper(gridtxt):
+    mat = text_solver(gridtxt)
+    gridtxt_final = mat_to_text(mat)
+    reset_boxes()
+    for idx, i in enumerate(gridtxt_final):
+        if i == "1":
+            globals()[f"b{idx}"].select()
+    b_solve['state'] = DISABLED
+    label_text.set("Solved. Shoot the lamps marked with green boxes.")
 
 for i in range(9):
     j = i+1
@@ -211,10 +220,13 @@ for i in range(9):
     globals()[f"b{i}"].grid(row=row, column=col, padx=1, pady=1)
 
 
-b_solve = Button(master, text="Solve", command=lambda:final_wrapper(master_gridtxt.get()))
-b_solve.grid(row=1, column=4, padx=1, pady=1)
+b_solve = Button(master, text="Solve", command=lambda:final_wrapper(master_gridtxt.get()), anchor="w")
+b_solve.grid(row=1, column=4, padx=1, pady=1, sticky="w")
 
-b_reset = Button(master, text="Reset", command=reset_boxes)
-b_reset.grid(row=2, column=4, padx=1, pady=1)
+b_reset = Button(master, text="Reset", command=reset_boxes, anchor="w")
+b_reset.grid(row=2, column=4, padx=1, pady=1, sticky="w")
+
+lbl = Label(master, textvariable=label_text, anchor="w")
+lbl.grid(row=3, column=4, padx=1, pady=1)
 
 master.mainloop()
