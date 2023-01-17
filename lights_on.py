@@ -186,6 +186,7 @@ label_text = StringVar()
 
 
 def update_gridtxt():
+    b_solve['state'] = NORMAL
     master_gridtxt.set("")
     for i in range(9):
         s = str(globals()[f"b_state{i}"].get())
